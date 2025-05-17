@@ -5,7 +5,7 @@
 ### 1. Clone the repository
 
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/Sahil9079100/SRXit.git
 cd SRxit
 ```
 
@@ -28,7 +28,7 @@ npm run install-all
 - **Frontend:**
   ```bash
   cd ../frontend
-  npm start
+  npm run dev
   ```
 
 ## Notes
