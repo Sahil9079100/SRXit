@@ -1,0 +1,29 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@theme {
+    --font-roboto: "Roboto", sans-serif; 
+}
+
+body{
+    background: gray;
+}
+
+#destiInput::placeholder {
+  color: gray;
+  opacity: 0.6; /* Firefox */
+  font-size:  90%;
+}
+
+
+/* @layer base {
+    @font-face {
+      font-family: 'Roboto';
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+      src: url(/fonts/Roboto.woff2) format('woff2');
+    }
+  } */
+
