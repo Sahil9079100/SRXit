@@ -4,6 +4,7 @@ import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
 import { LuEyeClosed } from "react-icons/lu";
 import { LuEye } from "react-icons/lu";
+ 
 
 
 const Login = () => {
@@ -13,6 +14,7 @@ const Login = () => {
     const [noPhone, setnoPhone] = useState(null)
     const [noPass, setnoPass] = useState(null)
     const [show, setshow] = useState(true)
+    const [eyeBG, seteyeBG] = useState(false)
 
     const [formData, setFormData] = useState({
         phoneNo: '',
@@ -87,7 +89,7 @@ const Login = () => {
                                 />
                                 {noPhone ? (<div className="text-red-600 text-center text-[15px]">Enter a phone number</div>) : (null)}
 
-                                <div className='bg-gray-900 rounded-b-lg flex'>
+                                <div className='bg-gray-900 relative rounded-b-lg flex'>
                                     <input
                                         className='bg-gray-900 h-9 rounded-bl-lg outline-none px-2 py-5 focus:bg-gray-800 text-white'
                                         type={show ? ("password") : ("text")}
@@ -97,8 +99,8 @@ const Login = () => {
                                         placeholder='enter your password'
                                         required
                                     />
-                                    <div onClick={() => { setshow(!show); }} className="bg-gray-900  w-full rounded-b-lg text-neutral-500 text-2xl flex items-center justify-center">
-                                        {show ? (<LuEye />) : (<LuEyeClosed />)}
+                                    <div onClick={() => { setshow(!show); }} className={` bg-transparent w-full rounded-b-lg text-neutral-500 text-2xl flex items-center justify-center`}>
+                                        {show ? (<LuEye className='bg--200 w-fit h-fit' />) : (<LuEyeClosed />)}
                                     </div>
                                 </div>
                                 {noPass ? (<div className="text-red-600 text-center text-[15px]">Enter a username or password</div>) : (<div className="text-red-600 text-center h-6 text-[15px]"></div>)}

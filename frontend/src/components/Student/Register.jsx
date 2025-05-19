@@ -47,6 +47,7 @@ const Register = () => {
         }
 
         try {
+            // console.log(formData)
             const responce = await axios.post('http://localhost:3000/api/register', formData, { withCredentials: true })
             console.log('Registration successful: ', responce.data);
             // alert("Regiatration successful")

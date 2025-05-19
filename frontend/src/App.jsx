@@ -33,7 +33,7 @@ function App() {
           <Route path="wardern/login" element={<WardernLogin />} />
           <Route path="wardern/register" element={<WardenRegister />} />
           <Route path="wardern/profile" element={<WardernProfile />} />
-          <Route path="/" element={<Test />} />
+          <Route path="/" element={<Home />} />
 
           <Route path="gatekeeper/login" element={<GatekepperLogin />} />
           <Route path="gatekeeper/register" element={<GatekeeperRegister />} />
