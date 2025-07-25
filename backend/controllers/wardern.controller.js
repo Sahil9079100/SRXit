@@ -34,7 +34,13 @@ const registerWardern = async (req, res) => {
 
 const wardernlogout = async (req, res) => {
     // res.cookie("wardernToken", "")
-    res.clearCookie('wardernToken')
+    // res.clearCookie('wardernToken')
+    res.clearCookie('wardernToken', {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'none',
+        path: '/'
+    });
     // res.send("logout")
     res.redirect("/")
 }
@@ -78,7 +84,7 @@ const wardernProfileController = async (req, res) => {
     const wardernToken = req.cookies.wardernToken
     const decoded = jwt.verify(wardernToken, process.env.SECRET_KEY)
     let ok = await Wardern.findOne({ phoneNo: decoded.phoneNo }).select(["-password", "-email"])
-    console.log("middleware user detail", ok);
+    // console.log("middleware user detail", ok);
     res.status(200).json({
         message: "middleware working and welcome",
         user: req.userCookie,
@@ -87,39 +93,49 @@ const wardernProfileController = async (req, res) => {
 }
 
 
-const pendingStudentList = async (req,res)=>{
+const pendingStudentList = async (req, res) => {
     // console.log(req.body.wardernName)
-    let studentList = await Student.find({status:"pending", wardenname: req.body.wardernName}).select(["-password"])
+    let studentList = await Student.find({ status: "pending", wardenname: req.body.wardernName }).select(["-password"])
     // console.log(studentList);
-    res.status(200).json({status:200,data: studentList})
+    res.status(200).json({ status: 200, data: studentList })
 }
 
-const accepctStudent = async(req,res)=>{
+const accepctStudent = async (req, res) => {
     console.log("Request accepted", req.body.phone);
-    let ok = await Student.findOne({ phoneNo:  req.body.phone})
+    let ok = await Student.findOne({ phoneNo: req.body.phone })
     ok.status = "accepted"
     await ok.save()
-    console.log("Request accepted", ok);
-    res.status(200).json({status:200, message:"Request accepted"})
+    // console.log("Request accepted", ok);
+    res.status(200).json({ status: 200, message: "Request accepted" })
 }
 
-const declineStudent = async(req,res)=>{
+const declineStudent = async (req, res) => {
     console.log("Request accepted", req.body.phone);
-    let ok = await Student.findOne({ phoneNo:  req.body.phone})
+    let ok = await Student.findOne({ phoneNo: req.body.phone })
     ok.status = "declined"
     await ok.save()
-    console.log("Request accepted", ok);
-    res.status(200).json({status:200, message:"Request declined"})
+    // console.log("Request declined", ok);
+    res.status(200).json({ status: 200, message: "Request declined" })
 }
 
-const doingPending = async(req,res)=>{
+const doingPending = async (req, res) => {
     console.log("Request accepted", req.body.phone);
-    let ok = await Student.findOne({ phoneNo:  req.body.phone})
+    let ok = await Student.findOne({ phoneNo: req.body.phone })
 
     ok.status = "none"
     await ok.save()
     // console.log("PLEASE GIVE START TO THIS REPO, PLEASEEEEEEEEEEEE", ok);
-    res.status(200).json({status:200, message:"Request default to pending"})
+    res.status(200).json({ status: 200, message: "Request default to pending" })
 }
 
-export { registerWardern, wardernlogout, wardernlogin, authMiddlewareWardern, wardernProfileController, pendingStudentList, accepctStudent, declineStudent, doingPending }
+const fetchPendingStudent = async (req, res) => {
+    try {
+        const pendingStudents = await Student.find({ status: "pending" }).select(["-password"]);
+        res.status(200).json({ status: 200, data: pendingStudents });
+    } catch (error) {
+        console.error("Error fetching pending students:", error);
+        res.status(200).json({ status: 500, message: "Internal server error" });
+    }
+}
+
+export { registerWardern, wardernlogout, wardernlogin, authMiddlewareWardern, wardernProfileController, pendingStudentList, accepctStudent, declineStudent, doingPending, fetchPendingStudent }

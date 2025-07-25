@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom';
+import API from '../../axiosConfig';
 
 const WardenRegister = () => {
     const navigate = useNavigate()
@@ -29,7 +30,8 @@ const WardenRegister = () => {
         }
 
         try {
-            const responce = await axios.post('http://localhost:3000/api/wardern/register', formData, { withCredentials: true })
+            // const responce = await axios.post('https://srxitbackend-production.up.railway.app/api/wardern/register', formData, { withCredentials: true })
+            const responce = await API.post('/api/wardern/register', formData)
             console.log('Registration successful: ', responce.data);
             // alert("Regiatration successful")
             navigate("/wardern/login")

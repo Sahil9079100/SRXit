@@ -4,7 +4,7 @@ import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
 import { LuEyeClosed } from "react-icons/lu";
 import { LuEye } from "react-icons/lu";
- 
+import API from '../../axiosConfig';
 
 
 const Login = () => {
@@ -50,8 +50,10 @@ const Login = () => {
 
         // return console.log(formData.phoneNo)
         try {
-            // console.log(formData);
-            const response = await axios.post("http://localhost:3000/api/login", formData, { withCredentials: true })
+            console.log(formData);
+            // const response = await axios.post("https://srxitbackend-production.up.railway.app/api/login", formData, { withCredentials: true })
+            const response = await API.post("/api/login", formData)
+            // console.log(import.meta.env.VITE_API_BASE_URL)
             console.log('Login successful:', response.data.message, response.data.status)
             if (response.data.status === 200) {
                 navigate("/user/profile")

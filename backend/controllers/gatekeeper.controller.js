@@ -6,18 +6,17 @@ import jwt from 'jsonwebtoken'
 import cookieParser from 'cookie-parser'
 import express from 'express'
 import { History } from "../models/history.model.js"
+import { PermissionFromGatekeeperSOCKET } from "../index.js"
 
 express().use(cookieParser())
 let demooo
-let goingOutTime
-let comeInTime;
 const registerGatekeeper = async (req, res) => {
     try {
         const { name, phoneNo, email, password } = req.body;
         bcrypt.genSalt(10, (err, salt) => {
             bcrypt.hash(password, salt, async (err, hash) => {
                 const ifany = await Gatekeeper.findOne({ phoneNo: req.body.phoneNo })
-                if(ifany) return res.status(200).json({status:500, message: "User already exist with this number" })
+                if (ifany) return res.status(200).json({ status: 500, message: "User already exist with this number" })
                 const newGatekeeper = new Gatekeeper({
                     name,
                     phoneNo,
@@ -40,7 +39,13 @@ const registerGatekeeper = async (req, res) => {
 
 const gatekeeperLogout = async (req, res) => {
     // res.cookie("token", "")
-    res.clearCookie('GKtoken')
+    // res.clearCookie('GKtoken')
+    res.clearCookie('GKtoken', {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'none',
+        path: '/'
+    });
     // res.send("logout")
     res.redirect("/")
 }
@@ -95,6 +100,19 @@ const studentProfileController = async (req, res) => {
     })
 }
 
+function getISTTimeFormatted() {
+    return new Date().toLocaleString('en-IN', {
+        timeZone: 'Asia/Kolkata',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+        second: 'numeric',
+        hour12: true
+    });
+}
+
 const addStudent = async (req, res) => {
 
     try {
@@ -110,7 +128,8 @@ const addStudent = async (req, res) => {
             second: 'numeric',
             hour12: true,
         };
-        const formattedDateTimee = new Intl.DateTimeFormat('en-US', options).format(now);
+        // const formattedDateTimee = new Intl.DateTimeFormat('en-IN', options).format(now);
+        const formattedDateTimee = getISTTimeFormatted()
         console.log(formattedDateTimee);
         if (req.body.qrkey === ok.randomQRtoken) {
 
@@ -131,7 +150,8 @@ const addStudent = async (req, res) => {
                     second: 'numeric',
                     hour12: true,
                 };
-                const formattedDateTime = new Intl.DateTimeFormat('en-US', options).format(now);
+                // const formattedDateTime = new Intl.DateTimeFormat('en-IN', options).format(now);
+                const formattedDateTime = getISTTimeFormatted()
                 console.log("coming in time: ", formattedDateTime);
                 // console.log(number)
                 console.log(ok.goOuttime)
@@ -141,7 +161,7 @@ const addStudent = async (req, res) => {
                 let email = ok.email
                 let collageyear = ok.collegeYear
                 let destination = ok.destination
-                let wardernname= ok.wardenname
+                let wardernname = ok.wardenname
                 let goOut = ok.goOuttime
                 let comein = formattedDateTime
                 try {
@@ -159,10 +179,17 @@ const addStudent = async (req, res) => {
                 } catch (error) {
                     console.log(error)
                 }
+                const num = ok.phoneNo
+                const message = "201"
+                await PermissionFromGatekeeperSOCKET({num,message})
                 return res.status(200).json({ status: 200, message: "The student is now inside" })
             }
 
             if (ok.status === "accepted") {
+                const num = ok.phoneNo
+                const message = "200"
+                console.log("socket data", {num,message})
+                await PermissionFromGatekeeperSOCKET({num,message})
                 ok.gateKeeperPermission = true
                 ok.goOuttime = formattedDateTimee
                 await ok.save()
@@ -199,7 +226,7 @@ const livestudents = async (req, res) => {
 }
 
 
-const historyStudent = async(req,res)=>{
+const historyStudent = async (req, res) => {
     let ok = await History.find().select(["-password"])
     // console.log(ok)
     res.status(200).json({ status: 200, message: "history working", historyStudent: ok })

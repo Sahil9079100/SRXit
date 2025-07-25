@@ -2,6 +2,7 @@ import React from 'react'
 import { useState } from 'react'
 import axios  from 'axios'
 import { useNavigate } from 'react-router-dom'
+import API from '../../axiosConfig'
 
 const WardernLogin = () => {
     const [formData, setFormData] = useState({
@@ -22,7 +23,8 @@ const WardernLogin = () => {
 
         try {
             // console.log(formData);
-            const response = await axios.post("http://localhost:3000/api/wardern/login", formData, {withCredentials: true})
+            // const response = await axios.post("https://srxitbackend-production.up.railway.app/api/wardern/login", formData, {withCredentials: true})
+            const response = await API.post("/api/wardern/login", formData)
             console.log('Login successful:', response.data.message, response.data.status)
             if (response.data.status === 200) {
                 navigate("/wardern/profile")

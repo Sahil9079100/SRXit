@@ -1,5 +1,5 @@
 import express from 'express'
-import {registerWardern, wardernlogout, wardernlogin, authMiddlewareWardern, wardernProfileController, pendingStudentList, accepctStudent, declineStudent, doingPending} from '../controllers/wardern.controller.js'
+import {registerWardern, wardernlogout, wardernlogin, authMiddlewareWardern, wardernProfileController, pendingStudentList, accepctStudent, declineStudent, doingPending, fetchPendingStudent} from '../controllers/wardern.controller.js'
 
 
 const router = express.Router()
@@ -13,6 +13,7 @@ router.post("/profile/pendingStudentList", pendingStudentList)
 router.post("/profile/accepctStudent", accepctStudent)
 router.post("/profile/declineStudent", declineStudent)
 router.post("/profile/doingPending",doingPending)
+router.get("/profile/fetchPendingStudent", fetchPendingStudent)
 // router.post("/profile/sendRequest", sendRequest)
 
 export default router

@@ -1,5 +1,5 @@
 import express from 'express'
-import {registerStudent, logout, login, authMiddleware, studentProfileController, sendRequest, checkStatus, isValidForQR, changingKey, fetchWardern, personalHistory} from '../controllers/student.controller.js'
+import {registerStudent, logout, login, authMiddleware, studentProfileController, sendRequest, checkStatus, isValidForQR, changingKey, fetchWardern, personalHistory, checkIFcookie} from '../controllers/student.controller.js'
 
 const router = express.Router()
 
@@ -14,6 +14,8 @@ router.post("/profile/checkStatus",checkStatus)
 router.get("/profile/isValidForQR", authMiddleware, isValidForQR)
 router.post("/profile/changingKey",changingKey)
 router.get("/profile/personalHistory",personalHistory)
+
+router.get("/checkCookie", checkIFcookie)
 
 
 export default router

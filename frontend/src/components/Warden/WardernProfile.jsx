@@ -3,6 +3,9 @@ import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import Loding from '../Loding/Loding.jsx'
+import API from '../../axiosConfig.js'
+import socket from '../../socket.js'
+import { AccepctStudentSOCKET, DeclineStudentSOCKET, RequestedStudentListenSOCKET } from '../../Socket_code.js'
 // import WardernDropdown from './WardenDropdown/WardenDropdown.jsx'
 
 const WardernProfile = () => {
@@ -14,8 +17,10 @@ const WardernProfile = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/api/wardern/profile", { withCredentials: true });
+        // const response = await axios.get("https://srxitbackend-production.up.railway.app/api/wardern/profile", { withCredentials: true });
+        const response = await API.get("/api/wardern/profile");
         setUser(response.data.userData); // Set the user data
+        console.log(socket.id);
       } catch (error) {
         console.error("Error fetching profile:", error.message);
         navigate("/wardern/login")
@@ -24,9 +29,20 @@ const WardernProfile = () => {
     fetchProfile();
   }, [navigate]);
 
+  useEffect(() => {
+    pendingStudentList();
+    RequestedStudentListenSOCKET((userr) => {
+      console.log("RequestedStudentListenSOCKET_frontend", userr);
+      setPendingStudent((prev) => [...prev, userr]);
+    })
+
+    // console.log(RequestedStudentListenSOCKET())
+  }, [user])
+
   const handleLogout = async () => {
     try {
-      await axios.get("http://localhost:3000/api/wardern/logout", { withCredentials: true })
+      // await axios.get("https://srxitbackend-production.up.railway.app/api/wardern/logout", { withCredentials: true })
+      await API.get("/api/wardern/logout")
       navigate("/wardern/login")
     } catch (error) {
       console.log("Error during logout", error.message);
@@ -39,8 +55,10 @@ const WardernProfile = () => {
       // setWardernName(user.name)
       // let ok = user.name
       let wardernNameData = { wardernName: user.name }
-      let list = await axios.post("http://localhost:3000/api/wardern/profile/pendingStudentList", wardernNameData, { withCredentials: true })
-      // console.log(list.data.data);
+      // let list = await axios.post("https://srxitbackend-production.up.railway.app/api/wardern/profile/pendingStudentList", wardernNameData, { withCredentials: true })
+      // /api/wardern/profile/fetchPendingStudent 
+      let list = await API.post("/api/wardern/profile/pendingStudentList", wardernNameData)
+      console.log(list.data.data);
       setPendingStudent(list.data.data)
     } catch (error) {
       console.log("Error during logout", error.message);
@@ -51,20 +69,23 @@ const WardernProfile = () => {
   //   pendingStudentList()
   // }, 4000);
 
-  useEffect(() => {
-    if (!user) return;
-    const interval = setInterval(async () => {
-      await pendingStudentList();
-    }, 1000);
+  // useEffect( async () => {
+  //   if (!user) return;
+  //   await pendingStudentList();
+  //   // const interval = setInterval(async () => {
+  //   // }, 5000);
 
-    return () => clearInterval(interval)
-  }, [user]);
+  //   return 0
+  // }, [user]);
 
   const accepct = async (phone) => {
     try {
       // console.log("phone number is: ", phone)
+      AccepctStudentSOCKET(phone)
+      setPendingStudent((prev) => prev.filter((elem) => elem.phoneNo !== phone))
       let phoneNo = { phone }
-      await axios.post("http://localhost:3000/api/wardern/profile/accepctStudent", phoneNo, { withCredentials: true })
+      // await axios.post("https://srxitbackend-production.up.railway.app/api/wardern/profile/accepctStudent", phoneNo, { withCredentials: true })
+      await API.post("/api/wardern/profile/accepctStudent", phoneNo)
       console.log("Request accepted .jsx");
     } catch (error) {
       console.log("Error during accepct", error.message);
@@ -72,15 +93,19 @@ const WardernProfile = () => {
   }
   const decline = async (phone) => {
     try {
+      DeclineStudentSOCKET(phone)
+      setPendingStudent((prev) => prev.filter((elem) => elem.phoneNo !== phone))
       console.log("phone number is: ", phone)
       let phoneNo = { phone }
-      await axios.post("http://localhost:3000/api/wardern/profile/declineStudent", phoneNo, { withCredentials: true })
+      // await axios.post("https://srxitbackend-production.up.railway.app/api/wardern/profile/declineStudent", phoneNo, { withCredentials: true })
+      await API.post("/api/wardern/profile/declineStudent", phoneNo)
       console.log("Request decline .jsx");
 
       setTimeout(async () => {
-        await axios.post("http://localhost:3000/api/wardern/profile/doingPending", phoneNo, { withCredentials: true })
+        // await axios.post("https://srxitbackend-production.up.railway.app/api/wardern/profile/doingPending", phoneNo, { withCredentials: true })
+        await API.post("/api/wardern/profile/doingPending", phoneNo)
         console.log("Request default to pending .jsx");
-      }, 5000);
+      }, 1000);
     } catch (error) {
       console.log("Error during decline", error.message);
     }

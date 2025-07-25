@@ -8,6 +8,7 @@ import { IoIosLogOut } from "react-icons/io";
 import { AiFillThunderbolt } from "react-icons/ai";
 import { AiOutlineThunderbolt } from "react-icons/ai";
 import Loding2 from '../Loding/Loding2.jsx'
+import API from '../../axiosConfig.js'
 // import WardernDropdown from './WardenDropdown/WardenDropdown.jsx'
 
 const StudentProfile = () => {
@@ -40,7 +41,8 @@ const StudentProfile = () => {
 
     const addStudent = async (qrdata) => {
         try {
-            const responce = await axios.post("http://localhost:3000/api/gatekeeper/profile/addStudent", qrdata, { withCredentials: true })
+            // const responce = await axios.post("https://srxitbackend-production.up.railway.app/api/gatekeeper/profile/addStudent", qrdata, { withCredentials: true })
+            const responce = await API.post("/api/gatekeeper/profile/addStudent", qrdata)
             console.log("RESPONCE DATA: ", responce.data.message)
             if (responce.data.status === 500) {
                 setErrormessage(responce.data.message)
@@ -92,7 +94,8 @@ const StudentProfile = () => {
     useEffect(() => {
         const fetchProfile = async () => {
             try {
-                const response = await axios.get("http://localhost:3000/api/gatekeeper/profile/studentProfileController", { withCredentials: true });
+                // const response = await axios.get("https://srxitbackend-production.up.railway.app/api/gatekeeper/profile/studentProfileController", { withCredentials: true });
+                const response = await API.get("/api/gatekeeper/profile/studentProfileController")
                 setUser(response.data.userData); // Set the user data
                 console.log("profile useeffect", response.data.userData);
 
@@ -108,7 +111,8 @@ const StudentProfile = () => {
 
     const handleLogout = async () => {
         try {
-            await axios.get("http://localhost:3000/api/gatekeeper/profile/logout", { withCredentials: true })
+            // await axios.get("https://srxitbackend-production.up.railway.app/api/gatekeeper/profile/logout")
+            await API.get("/api/gatekeeper/profile/logout")
             navigate("/gatekeeper/login")
         } catch (error) {
             console.log("Error during logout", error.message);
@@ -125,7 +129,8 @@ const StudentProfile = () => {
 
     const getHiatory = async () => {
         try {
-            const response = await axios.get("http://localhost:3000/api/gatekeeper/profile/historyStudent", { withCredentials: true })
+            // const response = await axios.get("https://srxitbackend-production.up.railway.app/api/gatekeeper/profile/historyStudent", { withCredentials: true })
+            const response = await API.get("/api/gatekeeper/profile/historyStudent")
             console.log("histotry", response.data.historyStudent)
             setHistoryArray(response.data.historyStudent)
         } catch (error) {
@@ -135,7 +140,8 @@ const StudentProfile = () => {
     const getLiveStudents = async (req, res) => {
         if (!user) return console.log("check status is working but USER is not here");
         try {
-            const response = await axios.get("http://localhost:3000/api/gatekeeper/profile/livestudents", { withCredentials: true })
+            // const response = await axios.get("https://srxitbackend-production.up.railway.app/api/gatekeeper/profile/livestudents", { withCredentials: true })
+            const response = await API.get("/api/gatekeeper/profile/livestudents")
             console.log(response.data.livestudents)
             setLivestudents(response.data.livestudents)
         } catch (error) {
@@ -246,7 +252,7 @@ const StudentProfile = () => {
                                 <div className='w-full h-[40%] justify-start flex flex-col'>
                                     <button onClick={scanQrFunction} className='border-2  border-lime-400 mx-28 mb-3 mt-4  px-2 py-2 bg-[#9cff2a34] text-lime-400 rounded-md active:scale-95 font-bold text-md'>Scan QR</button>
                                     {errorscanning ? (<><div className='text-red-500 text-lg mx-6'>{errormessage}<br />Please try again</div></>) : (null)}
-                                    {successMessagedisplay ? (<><div className='text-green-500 text-lg mx-6'>{successMessage}hajsdgahgf</div></>) : (null)}
+                                    {successMessagedisplay ? (<><div className='text-green-500 text-lg mx-6'>{successMessage}</div></>) : (null)}
                                 </div>
                             </div>
                         ) : (<></>)}

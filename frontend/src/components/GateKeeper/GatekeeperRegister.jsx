@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react'
+import API from '../../axiosConfig';
 
 const Register = () => {
     const navigate = useNavigate()
@@ -21,7 +22,7 @@ const Register = () => {
     }
 
     const loginPageRedirect = ()=>{
-        navigate("/user/login")
+        navigate("/gatekeeper/login")
     }
 
     const handleSubmit = async (e) => {
@@ -32,7 +33,8 @@ const Register = () => {
         }
 
         try {
-            const responce = await axios.post('http://localhost:3000/api/gatekeeper/profile/register', formData, { withCredentials: true })
+            // const responce = await axios.post('https://srxitbackend-production.up.railway.app/api/gatekeeper/profile/register', formData, { withCredentials: true })
+            const responce = await API.post('/api/gatekeeper/profile/register', formData)
             if(responce.data.status === 500){
                 setErrorText(responce.data.message)
                 setErrorTextdisplay(true)
@@ -44,7 +46,7 @@ const Register = () => {
             }
             console.log('Registration successful: ', responce.data);
             // alert("Regiatration successful")
-            navigate("/user/login")
+            navigate("/gatekeeper/login")
         } catch (error) {
             console.log(`Error:::> ${error.responce?.data || error.message}`)
             alert("Registration failed:::>" + (error.responce?.data?.message || error.message))

@@ -7,7 +7,7 @@ const dbname = "srxit"
 const dbconnect = async ()=>{
     try {
         const connectdb = await mongoose.connect(`${process.env.MONGO_DB_URI}/${dbname}`)
-        console.log(`MongoDB connectedsuccesfully:-  ${connectdb.connection.host}`);
+        console.log(`MongoDB connected succesfully:-  ${connectdb.connection.host}`);
     } catch (error) {
         console.log(`Error is:::-> ` ,error);
         process.exit(1)

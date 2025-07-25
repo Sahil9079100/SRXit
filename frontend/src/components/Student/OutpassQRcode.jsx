@@ -4,6 +4,9 @@ import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import Loding from '../Loding/Loding.jsx'
 import QRCode from "react-qr-code";
+import API from '../../axiosConfig.js'
+import socket from '../../socket.js'
+import { PermissionFromGatekeeperSOCKET } from '../../Socket_code.js'
 // import { login } from '../../../../backend/controllers/student.controller'
 // ReactDOM.render(<QRCode value="hey" />, document.getElementById("Container"));
 
@@ -17,12 +20,13 @@ const OutpassQRcode = () => {
 
     // ReactDOM.render(<QRCode value="hey" />, document.getElementById("Container"));
 
-    const checkStatus = async (req, res) => {
+    const checkStatus = async () => {
         if (!user) return console.log("check status is working but USER is not here");
         try {
             let ook = user.phoneNo
             let phoneNo = { ook }
-            const response = await axios.post("http://localhost:3000/api/profile/checkStatus", phoneNo, { withCredentials: true })
+            // const response = await axios.post("https://srxitbackend-production.up.railway.app/api/profile/checkStatus", phoneNo, { withCredentials: true })
+            const response = await API.post("/api/profile/checkStatus", phoneNo)
             console.log(response.data.status)
             console.log(response.data.data.gateKeeperPermission)
             let permission = response.data.data.gateKeeperPermission
@@ -37,12 +41,15 @@ const OutpassQRcode = () => {
         }
     }
 
+
+
     const randomgenerateQR = async () => {
         // if (!user) { return console.log }
         let num = Date.now().toString(36) + Math.random().toString(36).substr(2)
         console.log("random code: ", num);
         // console.log(assignKeyData())
-        const response = await axios.get("http://localhost:3000/api/profile/isValidForQR", { withCredentials: true });
+        // const response = await axios.get("https://srxitbackend-production.up.railway.app/api/profile/isValidForQR", { withCredentials: true });
+        const response = await API.get("/api/profile/isValidForQR");
         // console.log(response.data.userData.phoneNo)
         let data = num
         let phonn = response.data.userData.phoneNo
@@ -52,7 +59,8 @@ const OutpassQRcode = () => {
             phoneNo: response.data.userData.phoneNo,
             qrkey: data
         }
-        const bad = await axios.post("http://localhost:3000/api/profile/changingKey", dataObj, { withCredentials: true });
+        // const bad = await axios.post("https://srxitbackend-production.up.railway.app/api/profile/changingKey", dataObj, { withCredentials: true });
+        await API.post("/api/profile/changingKey", dataObj);
         // console.log(bad.data.message)
         // return data
     };
@@ -60,14 +68,15 @@ const OutpassQRcode = () => {
     useEffect(() => {
         const fetchProfile = async () => {
             try {
-                const response = await axios.get("http://localhost:3000/api/profile/isValidForQR", { withCredentials: true });
+                // const response = await axios.get("https://srxitbackend-production.up.railway.app/api/profile/isValidForQR", { withCredentials: true });
+                const response = await API.get("/api/profile/isValidForQR");
                 setUser(response.data.userData); // Set the user data
                 ok = response.data.userData
 
                 if (response.data.status == 500) {
                     console.log(response.data.message)
-                    return console.log("line 41")
-                    // return navigate("/user/profile")
+                    console.log("line 41")
+                    return navigate("/user/profile")
                 }
                 // console.log(response.data);
                 // let value = randomgenerateQR()
@@ -98,18 +107,33 @@ const OutpassQRcode = () => {
 
     useEffect(() => {
         if (!user) return;
-        const interval = setInterval(async () => {
-            checkStatus();
-            // console.log("set interwel running");
+        // const interval = setInterval(async () => {
+        //     checkStatus();
+        //     // console.log("set interwel running");
 
-        }, 1000);
+        // }, 5000);
 
-        return () => clearInterval(interval)
+        // return () => clearInterval(interval)
+        checkStatus()
+        PermissionFromGatekeeperSOCKET((data) => {
+            console.log("PermissionFromGatekeeperSOCKET data: ", data);
+
+            if (data.num == user.phoneNo) {
+                if (data.message == "200") {
+                    setGatePer(true);
+                } else if (data.message == "201") {
+                    navigate("/user/profile/")
+                }
+            }
+            else {
+                return 0;
+            }
+        })
+
     }, [user]);
 
     return (
         <>
-
             {gotData ? (
                 <>
                     <div className='main bg-black h-screen flex flex-col justify-center items-center gap-2'>
@@ -136,7 +160,6 @@ const OutpassQRcode = () => {
                     </div>
                 </>
             )}
-
         </>
     )
 }

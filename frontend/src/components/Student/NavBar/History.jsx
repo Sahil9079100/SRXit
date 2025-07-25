@@ -5,7 +5,7 @@ import { IoChevronBack } from "react-icons/io5";
 import { useNavigate } from 'react-router-dom';
 import { HiRefresh } from "react-icons/hi";
 import { useAnimate } from "motion/react";
-
+import API from '../../../axiosConfig';
 
 
 const History = () => {
@@ -20,9 +20,10 @@ const History = () => {
     const personalHistory = async () => {
         console.log("running")
         try {
-            const responce = await axios.get("http://localhost:3000/api/profile/personalHistory", { withCredentials: true })
-            const data = responce.data.personalHistory
-            setPersonalHis(data)
+            // const responce = await axios.get("https://srxitbackend-production.up.railway.app/api/profile/personalHistory", { withCredentials: true })
+            const responce = await API.get("/api/profile/personalHistory")
+            // const data = responce.data.personalHistory
+            setPersonalHis(responce.data.personalHistory)
             console.log(responce.data.personalHistory)
         } catch (error) {
             console.log("tryCatch error-> ", error)
@@ -51,7 +52,7 @@ const History = () => {
                 <div className='bg-gray-900 w-full h-[93vh] flex flex-col gap-3 p-3 overflow-scroll'>
                     {personalHis ? (
                         <>
-                            {personalHis.length > 1 ? (<>
+                            {personalHis.length >=1 ? (<>
                                 {personalHis.map(function (elem, idx) {
                                     return <div key={elem._id} className='bg-gray-950 flex flex-col p-2 border-[1px] border-opacity-50 rounded-[7px] border-lime-300'>
                                         {/* <div className='w-fit text-white'>In t<span className='text-lime-200'>{idx}</span></div> */}
